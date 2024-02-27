@@ -4,6 +4,7 @@ import Navbar from './components/navbar'
 import keycloak from './keycloak/keycloak'
 
 import './App.css'
+import { sha256 } from './security/tokenEncrypt'
 
 async function getKey (token: string) {
   const options = {
@@ -35,7 +36,7 @@ function App() {
 
   useEffect(()=>{
     if(!auth) return
-    getKey(keycloak.token)
+    localStorage.setItem('token', keycloak.token)
   },[auth])
 
   return (

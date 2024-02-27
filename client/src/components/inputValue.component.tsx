@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import CryptoJS, { AES } from 'crypto-js'
 import { data128, data1Mb, data256, data2Mb, data512 } from '../test data/data'
+import { sha256 } from '../security/tokenEncrypt'
 
-const secretKey = 'SecretKeyTest123'
-
-async function postData (encryptData: any) {
+async function postData (encryptData: any, secretKey: string) {
     const options = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
         body: JSON.stringify({data: encryptData})
     }
     const response = await fetch('http://localhost:9000/message',options)
@@ -54,11 +56,15 @@ function InputValueComponent () {
     }
 
     const handleSubmit = () => {
-        const cipherText = radioSelected === 'None'?AES.encrypt(inputValue, secretKey):AES.encrypt(JSON.stringify(selectedData), secretKey)
-        setCipherTextString((cipherText).toString())
-        postData(cipherText.toString()).then(
-            res=>setServerResponse(res)
-        ).catch(error=>console.log(error))
+        sha256(localStorage.getItem('token')).then(
+            res => {
+                const cipherText = radioSelected === 'None'?AES.encrypt(inputValue, res):AES.encrypt(JSON.stringify(selectedData), res)
+                setCipherTextString((cipherText).toString())
+                postData(cipherText.toString(), res).then(
+                    res=>setServerResponse(res)
+                ).catch(error=>console.log(error))
+            }
+        )
     }
 
     const handleCancel = () => {

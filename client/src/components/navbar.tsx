@@ -2,6 +2,7 @@ import keycloak from "../keycloak/keycloak"
 
 const Navbar = () => {
     const handleLogout = () => {
+        localStorage.removeItem('token')
         keycloak.logout()
     }
 
