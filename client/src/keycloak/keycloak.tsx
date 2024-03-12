@@ -6,5 +6,4 @@ const keycloak = new Keycloak({
     clientId: "app-collection",
 });
 
-export default keycloak
-
+export default keycloak;
